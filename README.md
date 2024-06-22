@@ -265,6 +265,192 @@ El error cuadratico medio esta muy alejado de cero luego no es una hipotesis con
 
 Para ello, utilizaremos una técnica llamada one_hot_enconding que permite transformar en un conjunto de 1 y 0 una variable categórica. Por ejemplo, si tuviéramos una variable denominada color, con los valores Azul, Rojo y Verde, el one_hote_encoding crearía 3 variables color_Azul, color_Rojo, color_Verde con los valores 1 y 0 dependiendo de si el valor de la variable original era azul, rojo o verde
 
+# preparamos el dataset de la hipótesis 2
+# vamos a tratar algunas de las variables categoricas con la técnica de one_hot_encoding
+categorical_columns_2 = ['sex','smoker', 'region']
+
+#Preparamos el dataset de la hipótesis 2
+df2_hipot2 = pd.get_dummies(data = df2, prefix = 'OHE', prefix_sep='_',
+               columns = categorical_columns_2,
+               drop_first =True,
+              dtype='int8')
+
+
+# miramos nuestro dataSet
+df2_hipot2.head()
+
+X_hipot2 = df2_hipot2.drop('charges',axis=1) #  variables independientes
+y_hipot2 = df2_hipot2['charges'] #  variable depnediente
+
+# preparamos train data y test data
+from sklearn.model_selection import train_test_split
+X_hipot2_train, X_hipot2_test, y_hipot2_train, y_hipot2_test = train_test_split(X_hipot2, y_hipot2, test_size=0.20, random_state=43)
+
+#Regresion lineal
+from sklearn.linear_model import LinearRegression
+regresion_lineal=LinearRegression()
+regresion_lineal.fit(X_hipot2_train, y_hipot2_train)
+
+# FASE VALIDACION
+
+# predecimos los valores y para los datos usados en el entrenamiento
+prediccion_entrenamiento = regresion_lineal.predict(X_hipot2_train)
+
+# calculamos el Error Cuadrático Medio (MSE = Mean Squared Error)
+mse_hipot2_train = mean_squared_error(y_true = y_hipot2_train, y_pred = prediccion_entrenamiento)
+print('Error Cuadrático Medio (MSE) HIPO 1 TRAIN= ' + str(mse_hipot1_train))
+print('Error Cuadrático Medio (MSE) HIPO 2 TRAIN= ' + str(mse_hipot2_train))
+
+# predecimos los valores y para los datos usados en el entrenamiento
+prediccion_entrenamiento = regresion_lineal.predict(X_hipot2_test)
+
+# calculamos el Error Cuadrático Medio (MSE = Mean Squared Error)
+mse_hipot2_test = mean_squared_error(y_true = y_hipot2_test, y_pred = prediccion_entrenamiento)
+print('Error Cuadrático Medio (MSE) HIPO 1 TEST= ' + str(mse_hipot1_test))
+print('Error Cuadrático Medio (MSE) HIPO 2 TEST= ' + str(mse_hipot2_test))
+
+Aun es muy lejano a cero se prueba otra hipotesis
+
+HIPOTESIS 3: Normalizando todas las variables
+
+
+# Preparamos el dataset de la hipótesis 3
+# Vamos a tratar algunas de las variables categóricas con la técnica de one_hot_encoding
+categorical_columns_2 = ['sex', 'smoker', 'region']
+numerical_columns_1 = ['age', 'bmi', 'children', 'charges']
+
+
+# Aplicamos one-hot encoding a las variables categóricas
+df3_hipot3 = pd.get_dummies(data=df, prefix='NEW', prefix_sep='_',
+                            columns=categorical_columns_2,
+                            drop_first=True,
+                            dtype='int8')
+
+# miramos nuestro dataSet
+df3_hipot3.head()
+
+# Definimos las variables independientes (X) y la variable dependiente (y)
+X_hipot3 = df3_hipot3.drop('charges', axis=1)
+y_hipot3 = df3_hipot3['charges']
+
+
+# Scaling Data
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+
+# Escalado de las variables independientes (X_hipot3)
+X_hipot3 = scaler.fit_transform(X_hipot3)
+
+# Escalado de la variable dependiente (y_hipot3)
+y_hipot3 = scaler.fit_transform(y_hipot3.reshape(-1, 1)).flatten()
+
+# Ahora X_hipot3 y y_hipot3 están listos para ser utilizados en modelos de machine learning
+
+# Volvemos a transformar nuestra variable en un array de 1xn
+y_hipot3=y_hipot3.reshape(1,-1)[0]
+
+# preparamos train data y test data
+X_hipot3_train, X_hipot3_test, y_hipot3_train, y_hipot3_test = train_test_split(X_hipot3, y_hipot3, test_size=0.20, random_state=43)
+
+#Regresion lineal
+from sklearn.linear_model import LinearRegression
+regresion_lineal=LinearRegression()
+regresion_lineal.fit(X_hipot3_train, y_hipot3_train)
+
+# FASE VALIDACION
+
+# Predecimos los valores y para los datos usados en el entrenamiento
+prediccion_entrenamiento = regresion_lineal.predict(X_hipot3_train)
+
+# Calculamos el Error Cuadrático Medio (MSE = Mean Squared Error)
+mse_hipot3_train = mean_squared_error(y_true=y_hipot3_train, y_pred=prediccion_entrenamiento)
+print('Error Cuadrático Medio (MSE) HIPO 1 TRAIN= ' + str(mse_hipot1_train))
+print('Error Cuadrático Medio (MSE) HIPO 2 TRAIN= ' + str(mse_hipot2_train))
+print('Error Cuadrático Medio (MSE) HIPO 3 TRAIN= ' + str(mse_hipot3_train))
+
+# Predecimos los valores y para los datos usados en el test
+prediccion_test = regresion_lineal.predict(X_hipot3_test)
+
+# Calculamos el Error Cuadrático Medio (MSE) para el conjunto de test
+mse_hipot3_test = mean_squared_error(y_true=y_hipot3_test, y_pred=prediccion_test)
+print('Error Cuadrático Medio (MSE) HIPO 1 TEST= ' + str(mse_hipot1_test))
+print('Error Cuadrático Medio (MSE) HIPO 2 TEST= ' + str(mse_hipot2_test))
+print('Error Cuadrático Medio (MSE) HIPO 3 TEST= ' + str(mse_hipot3_test))
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
+
+# Definir las variables categóricas y numéricas
+categorical_columns_2 = ['sex', 'smoker', 'region']
+numerical_columns_1 = ['age', 'bmi', 'children', 'charges']
+
+# Aplicar one-hot encoding a las variables categóricas y eliminar columnas innecesarias
+df_hipot4 = pd.get_dummies(data=df, prefix='NEW', prefix_sep='_',
+                           columns=categorical_columns_2,
+                           drop_first=True,
+                           dtype='int8')
+
+# Escalar las variables numéricas y la variable dependiente 'charges' usando StandardScaler
+scaler = StandardScaler()
+df_hipot4[numerical_columns_1[:-1]] = scaler.fit_transform(df_hipot4[numerical_columns_1[:-1]])
+df_hipot4['charges'] = scaler.fit_transform(df_hipot4['charges'].values.reshape(-1, 1)).flatten()
+
+# Separar las variables independientes (X_hipot4) y la variable dependiente (y_hipot4)
+X_hipot4 = df_hipot4.drop('charges', axis=1)
+y_hipot4 = df_hipot4['charges']
+
+# Dividir los datos en conjunto de entrenamiento y conjunto de prueba
+X_hipot4_train, X_hipot4_test, y_hipot4_train, y_hipot4_test = train_test_split(X_hipot4, y_hipot4, test_size=0.20, random_state=43)
+
+# Entrenar un modelo de regresión lineal
+regresion_lineal = LinearRegression()
+regresion_lineal.fit(X_hipot4_train, y_hipot4_train)
+
+# FASE DE VALIDACIÓN
+
+
+# Predecir los valores y para los datos usados en el entrenamiento
+prediccion_entrenamiento = regresion_lineal.predict(X_hipot4_train)
+
+# Calcular el Error Cuadrático Medio (MSE) en el conjunto de entrenamiento
+mse_hipot4_train = mean_squared_error(y_true=y_hipot4_train, y_pred=prediccion_entrenamiento)
+print('Error Cuadrático Medio (MSE) HIPO 1 TRAIN= ' + str(mse_hipot1_train))
+print('Error Cuadrático Medio (MSE) HIPO 2 TRAIN= ' + str(mse_hipot2_train))
+print('Error Cuadrático Medio (MSE) HIPO 3 TRAIN= ' + str(mse_hipot3_train))
+print('Error Cuadrático Medio (MSE) HIPO 4 TRAIN= ' + str(mse_hipot4_train))
+
+# Predecir los valores y para los datos usados en el conjunto de prueba
+prediccion_test = regresion_lineal.predict(X_hipot4_test)
+
+# Calcular el Error Cuadrático Medio (MSE) en el conjunto de prueba
+mse_hipot4_test = mean_squared_error(y_true=y_hipot4_test, y_pred=prediccion_test)
+print('Error Cuadrático Medio (MSE) HIPO 1 TEST= ' + str(mse_hipot1_test))
+print('Error Cuadrático Medio (MSE) HIPO 2 TEST= ' + str(mse_hipot2_test))
+print('Error Cuadrático Medio (MSE) HIPO 3 TEST= ' + str(mse_hipot3_test))
+print('Error Cuadrático Medio (MSE) HIPO 4 TEST= ' + str(mse_hipot4_test))
+
+ANALISIS DE RESULTADOS
+
+
+
+Análisis de resultados:
+
+Hipótesis 1 muestra un MSE elevado tanto en entrenamiento como en prueba, entonces se descarta.
+
+Hipótesis 2 mejora significativamente respecto a la primera hipótesis, tanto en el MSE de entrenamiento como en el de prueba. Pero esta alejado de cero por lo mismo se descarta.
+
+Hipótesis 3 muestra un MSE muy cercano a cero, tanto en entrenamiento como en prueba. Este resultado sugiere que la combinación de one-hot encoding y normalización de las variables ha optimizado considerablemente el modelo.
+
+Hipótesis 4 en el conjunto de entrenamiento es de aproximadamente 0.2385, y en el conjunto de prueba es de aproximadamente 0.2934. Igual resultado que la Hipotesis 3 el modelo tiene un rendimiento pero es innecesario
+
+Conclusión:
+
+Basándonos en los errores cuadráticos medios obtenidos, la Hipótesis 3 es la mejor opción. Esta hipótesis logro un MSE bajo. Lo que nos garantiza que se pueden predecir los cargos médicos con precision en este conjunto de datos, se recomienda utilizar la Hipótesis 3 como el modelo preferido.
+
+La Hipótesis 4, tambien predice los (charges) con la misma precision que la H3 utilizando regresión lineal. Sin embargo es irrelevante para el objetivo de este ejercicio.
 
 
 
