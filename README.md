@@ -1,5 +1,5 @@
 # Insurance
-Se hace un Analisis exploratorio basico con Python. 
+Se hace un Analisis con IA basico con Python. 
 No olvides el Json 
 # Insurance-Analysis
 ## Project Description
